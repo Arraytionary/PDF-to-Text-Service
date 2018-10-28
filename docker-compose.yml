@@ -5,6 +5,7 @@ services:
     image: "mongo:3.6.8-stretch"
     volumes:
       - ./mongo:/data/db
+
   minio:
     image: minio/minio
     command: server /data
@@ -17,10 +18,12 @@ services:
       MINIO_ACCESS_KEY: admin
       MINIO_SECRET_KEY: password
       MINIO_BROWSER: "on"
+
   redis:
     image: redis:4-alpine
     ports:
       - '8879:8879'
+
   queue-wrapper:
     build:
       context: ./queue-wrapper
@@ -30,14 +33,28 @@ services:
       - REDIS_QUEUE=redis
     ports:
       - '5000:5000'
-    extract-worker:
-      build:
-        context: ./extract-worker
-      depends_on:
-        - 'redis'
+
   extract-worker:
     build: ./extract-worker
     depends_on:
       - "redis"
     environment:
       - MINIO_HOST=minio
+      - REDIS_QUEUE=redis
+  
+  convert-worker:
+    build: ./convert-worker
+    depends_on:
+      -"redis"
+    environment:
+      - MINIO_HOST=minio
+      - REDIS_QUEUE=redis
+  
+  zip-worker:
+    build: ./zip-worker
+    depends_on:
+      -"redis"
+    environment:
+      - MINIO_HOST=minio
+      - REDIS_QUEUE=redis
+  
