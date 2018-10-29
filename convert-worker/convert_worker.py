@@ -66,9 +66,9 @@ def execute(log, task):
     register_text__to_db(uuid, f"./{pdf[:-3]}txt")
     delete_all(pdf[:-3])
 
-def download(uuid, file_name, path)
+def download(uuid, file_name, path):
     try:
-    data = minioClient.get_object(uuid, file_name)
+        data = minioClient.get_object(uuid, file_name)
     with open(path + file_name, 'wb') as file_data:
         for d in data.stream(32*1024):
             file_data.write(d)

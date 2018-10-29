@@ -12,8 +12,8 @@ services:
     ports:
       - 9000:9000
     volumes:
-      - ./data:/data
-      - ./config:/root/.minio
+      - ./minio/data:/data
+      - ./minio/config:/root/.minio
     environment:
       MINIO_ACCESS_KEY: admin
       MINIO_SECRET_KEY: password
@@ -45,7 +45,7 @@ services:
   convert-worker:
     build: ./convert-worker
     depends_on:
-      -"redis"
+      - "redis"
     environment:
       - MINIO_HOST=minio
       - REDIS_QUEUE=redis
@@ -53,8 +53,9 @@ services:
   zip-worker:
     build: ./zip-worker
     depends_on:
-      -"redis"
+      - "redis"
     environment:
       - MINIO_HOST=minio
       - REDIS_QUEUE=redis
+  
   

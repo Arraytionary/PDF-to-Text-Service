@@ -86,7 +86,7 @@ def execute(log, task):
 def extract(uuid, file_name, path):
     # retrieve file from minio
     try:
-    data = minioClient.get_object(uuid, file_name)
+        data = minioClient.get_object(uuid, file_name)
     with open(path + file_name, 'wb') as file_data:
         for d in data.stream(32*1024):
             file_data.write(d)
