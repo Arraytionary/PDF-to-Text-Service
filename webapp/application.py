@@ -27,8 +27,6 @@ if __name__ == "__main__":
             (r"/progress", ProgressSocketHandler),
             (r"/uploader", UploaderHandler, dict(minioClient=minioClient)),
         ],
-        # cookie_secret="Supanut_BOATTTTTTTTTTTT",
-        # xsrf_cookies=True,
         debug=True,
     )
     app.listen(5555)
