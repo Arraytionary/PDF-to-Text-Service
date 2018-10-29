@@ -28,14 +28,14 @@ class UploadUtill:
 
     def addfile(self, data):
         bucket_name = self._create_bucket()
-        """ add tgs file to minio   """
+        """ add tgs file to minio """
         obj_name = f"{bucket_name}.tgz"
-        f = io.BytesIO(data)
+        file = io.BytesIO(data)
         try:
             print(self.minio.put_object(
                 bucket_name,
                 obj_name,
-                f,
+                file,
                 len(data)
             ))
             return bucket_name
