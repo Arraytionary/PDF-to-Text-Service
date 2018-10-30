@@ -3,7 +3,7 @@ import json
 import redis
 import requests
 from flask import Flask, jsonify, request
-import db_utils
+from .db_utils import *
 from pymongo import MongoClient
 
 
@@ -13,7 +13,7 @@ mongo = client.mango
 class RedisResource:
     REDIS_QUEUE_LOCATION = os.getenv('REDIS_QUEUE', 'localhost')
     QUEUE_C = 'convert_queue'
-    QUEUE_Z = 'zip_queue'
+    QUEUE_Z = 'compress_queue'
 
     host, *port_info = REDIS_QUEUE_LOCATION.split(':')
     port = tuple()
@@ -34,6 +34,6 @@ def send_job(uuid):
             json_packed)
     
     json_packed = json.dumps({"uuid": uuid})
-        RedisResource.conn.rpush(
-            RedisResource.QUEUE_Z,
-            json_packed)
+    RedisResource.conn.rpush(
+        RedisResource.QUEUE_Z,
+        json_packed)

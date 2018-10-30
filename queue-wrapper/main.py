@@ -4,6 +4,7 @@ import redis
 import requests
 from flask import Flask, jsonify, request
 from pymongo import MongoClient
+import pymongo
 from flask_cors import CORS, cross_origin
 HOST = os.getenv("SOS_HOST", "localhost")
 PORT = os.getenv("SOS_PORT", 8000)
@@ -38,8 +39,8 @@ def send_job():
     uuid = body["uuid"]
 
     # add information to database
-    if not assign_db(uuid, file_name):
-        return jsonify({'status': 'UUID already exist'}),400
+    # if not assign_db(uuid, file_name):
+    #     return jsonify({'status': 'UUID already exist'}),400
     
     # push json to extract queue
     json_packed = json.dumps({"uuid": uuid, "zip_name": file_name})
@@ -52,7 +53,7 @@ def send_job():
 def assign_db(uuid, file_name):
     buckets = mongo.db.buckets
     try:
-        bucket.insert_one({'_id': uuid, 'zip_name': file_name, 'pdfs':[], 'txts':[]})
+        buckets.insert_one({'_id': uuid, 'zip_name': file_name, 'pdfs':[], 'txts':[]})
         return True
     except pymongo.errors.DuplicateKeyError:
         return False

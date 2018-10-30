@@ -38,6 +38,7 @@ services:
     build: ./extract-worker
     depends_on:
       - "redis"
+      - "minio"
     environment:
       - MINIO_HOST=minio
       - REDIS_QUEUE=redis
@@ -46,6 +47,7 @@ services:
     build: ./convert-worker
     depends_on:
       - "redis"
+      - "minio"
     environment:
       - MINIO_HOST=minio
       - REDIS_QUEUE=redis
@@ -54,8 +56,30 @@ services:
     build: ./zip-worker
     depends_on:
       - "redis"
+      - "minio"
     environment:
       - MINIO_HOST=minio
       - REDIS_QUEUE=redis
+  web:
+    build: ./webapp
+    depends_on:
+      - "minio"
+    ports:
+      - '5555:5555'
+    environment:
+      - MINIO_HOST=minio
+      - QUEUE_HOST=queue-wrapper
+
+  mongo-express:
+    restart: always
+    depends_on:
+      - "mongo"
+    image: "mongo-express:latest"
+    ports:
+      - "8081:8081"
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongo
+      - ME_CONFIG_BASICAUTH_USERNAME=puyo
+      - ME_CONFIG_BASICAUTH_PASSWORD=tetris
   
   

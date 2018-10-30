@@ -5,7 +5,9 @@ import json
 import uuid
 import redis
 import requests
+from pymongo import MongoClient
 from Utils.db_utils import *
+from Utils.tar_utils import make_tarfile
 
 from minio import Minio
 from minio.error import ResponseError
@@ -22,7 +24,7 @@ mongo = client.mango
 
 LOG = logging
 REDIS_QUEUE_LOCATION = os.getenv('REDIS_QUEUE', 'localhost')
-QUEUE_NAME = 'zip_queue'
+QUEUE_NAME = 'compress_queue'
 
 INSTANCE_NAME = uuid.uuid4().hex
 
@@ -70,25 +72,32 @@ def execute(log, task):
     # done all converted
     # TODO tell backend that the conversion is complete
 
-    path = f"./{uuid}/txt"
+    path = f"./{uuid}/txt/"
+    if not os.path.exists(path):
+        os.makedirs(path)
     zip_name = get_zip_name(uuid, mongo)
     download_all_txt(uuid, path)
     # zip all txt file
 
-    tardir(uuid, path, zip_name)
+    if not os.path.exists(f"./{uuid}/zip"):
+        os.makedirs(f"./{uuid}/zip")
+
+    make_tarfile(f"../zip/{zip_name}", path[:-1])
+
+    
     upload(uuid, f"./{uuid}/zip/", zip_name)
     # tell backend that file is ready for download
     
 
-def download_all_txt(uuid, path)
+def download_all_txt(uuid, path):
     for file_name in get_txts_list(uuid, mongo):
         try:
-        data = minioClient.get_object(uuid, file_name)
-        with open(path + file_name, 'wb') as file_data:
-            for d in data.stream(32*1024):
-                file_data.write(d)
+            data = minioClient.get_object(uuid, file_name)
+            with open(path + file_name, 'wb') as file_data:
+                for d in data.stream(32*1024):
+                    file_data.write(d)
         except ResponseError as err:
-            log.info(err)
+            LOG.info(err)
 
 def delete_all(file_name):
     #delete file downloaded from sos
@@ -107,8 +116,8 @@ def upload(uuid, path, file_name):
         log.info(err)
     try:
         with open(path + file_name, 'rb') as file_data:
-            file_stat = os.stat(file)
-            print(minioClient.put_object(uuid, file,
+            file_stat = os.stat(path + file_name)
+            print(minioClient.put_object(uuid, file_name,
                                 file_data, file_stat.st_size))
     except ResponseError as err:
         log.info(err)

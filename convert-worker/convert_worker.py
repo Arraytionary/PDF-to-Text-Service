@@ -5,6 +5,7 @@ import json
 import uuid
 import redis
 import requests
+from pymongo import MongoClient
 
 from minio import Minio
 from minio.error import ResponseError
@@ -69,11 +70,11 @@ def execute(log, task):
 def download(uuid, file_name, path):
     try:
         data = minioClient.get_object(uuid, file_name)
-    with open(path + file_name, 'wb') as file_data:
-        for d in data.stream(32*1024):
-            file_data.write(d)
+        with open(path + file_name, 'wb') as file_data:
+            for d in data.stream(32*1024):
+                file_data.write(d)
     except ResponseError as err:
-        log.info(err)
+        LOG.info(err)
 
 def delete_all(file_name):
     #delete file downloaded from sos
@@ -88,16 +89,16 @@ def convert(file_name):
 def upload(uuid, file_name):
     try:
         with open(file_name, 'rb') as file_data:
-            file_stat = os.stat(file)
-            print(minioClient.put_object(uuid, file,
+            file_stat = os.stat(file_name)
+            print(minioClient.put_object(uuid, file_name[2:],
                                 file_data, file_stat.st_size))
     except ResponseError as err:
-        log.info(err)
+        LOG.info(err)
 
 def register_text__to_db(uuid, file):
     buckets = mongo.db.buckets
     bucket = buckets.find_one({"_id": uuid})
-    bucket.txts.append(file)
+    bucket["txts"].append(file[2:])
     buckets.save(bucket)
 
 def main():

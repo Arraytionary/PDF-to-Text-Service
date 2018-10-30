@@ -3,3 +3,4 @@ redis==2.10
 ez_setup==0.9
 requests==2.19.1
 minio
+pymongo

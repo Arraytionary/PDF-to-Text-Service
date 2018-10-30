@@ -1,7 +1,9 @@
 import tornado
 from tornado.httpclient import AsyncHTTPClient
 from utils.uploadutil import UploadUtill
+import os
 
+HOST = os.getenv('QUEUE_HOST','localhost')
 class UploaderHandler(tornado.web.RequestHandler):
     def initialize(self, minioClient):
         self.UploadUtill = UploadUtill(minioClient)
@@ -15,10 +17,10 @@ class UploaderHandler(tornado.web.RequestHandler):
             self.write(tornado.escape.json_encode(resjson))
             self.set_status(200)
 
-            api_endpoint = 'localhost:5000/createtxt'
+            api_endpoint = f'{HOST}:5000/createtxt'
             headers = {'Content-Type': 'application/json'}
-            json_data = tornado.escape.json_encode(data)
-            response = await tornado.http_client.fetch(api_endpoint,
+            json_data = tornado.escape.json_encode(resjson)
+            response = tornado.httpclient.fetch(api_endpoint,
                                             raise_error=False,
                                             method='POST',
                                             body=json_data,

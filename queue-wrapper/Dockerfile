@@ -8,6 +8,8 @@ COPY requirements.txt /app/requirements.txt
 RUN pip install -r /app/requirements.txt
 
 # Copy everthing from . to /app inside the 'box'
+ENV MONGO_INITDB_DATABASE mango
+
 COPY . /app
 WORKDIR /app
 

@@ -1,9 +1,9 @@
-
-import os
 import tarfile
-def tardir(uuid, path, tar_name):
-    with tarfile.open(tar_name, "w:gz") as tar_handle:
-        for file in os.listdir(path):
-            tar_handle.add(os.path.join(f"./{uuid}/zip", file))
-# tardir('./', 'sample.tar.gz') run this script to zip file
-# tar.close()
+import os
+
+def make_tarfile(output_filename, source_dir):
+    os.chdir(source_dir)
+    for file in os.listdir():
+        with tarfile.open(output_filename, "w:gz") as tar:
+            tar.add("./" + file, arcname=os.path.basename(file))
+    os.chdir("../../")

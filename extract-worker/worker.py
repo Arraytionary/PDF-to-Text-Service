@@ -70,6 +70,11 @@ def execute(log, task):
 
     # assign path
     path = f"./f{uuid}/"
+    if not os.path.exists(path+"pdfs"):
+        os.makedirs(f"{path}pdfs")
+
+    # download
+    # download(uuid, zip_name, path)
 
     # extract file
     extract(uuid, zip_name, path)
@@ -77,33 +82,43 @@ def execute(log, task):
     # upload extracted file to minio
     upload(uuid, f"{path}pdfs")
 
-    # assign file to mogodb
+    # assign file to mongodb
     register_pdf__to_db(uuid, f"{path}pdfs", mongo)
 
     # send job to queue
     send_job(uuid)
 
+# def download(uuid, file_name, path):
+#     try:
+#         data = minioClient.get_object(uuid, file_name)
+#         with open(path + file_name, 'wb') as file_data:
+#             for d in data.stream(32*1024):
+#                 file_data.write(d)
+#     except ResponseError as err:
+#         log.info(err)
+
 def extract(uuid, file_name, path):
     # retrieve file from minio
     try:
         data = minioClient.get_object(uuid, file_name)
-    with open(path + file_name, 'wb') as file_data:
-        for d in data.stream(32*1024):
-            file_data.write(d)
+        with open(path + file_name, 'wb') as file_data:
+            for d in data.stream(32*1024):
+                file_data.write(d)
     except ResponseError as err:
         log.info(err)
     
     
     # extract
-    unzip(f"p{path}pdfs", f"{path}{file_name}")
+    unzip(f"{path}pdfs", f"{path}{file_name}")
 
 
 # upload file to minio
 def upload(uuid, path):
     for file in os.listdir(path):
+        f_path = path + "/" + file
         try:
-            with open(file, 'rb') as file_data:
-                file_stat = os.stat(file)
+            with open(f_path, 'rb') as file_data:
+                file_stat = os.stat(f_path)
                 print(minioClient.put_object(uuid, file,
                                     file_data, file_stat.st_size))
         except ResponseError as err:
