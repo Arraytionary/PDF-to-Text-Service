@@ -1,3 +1,6 @@
+import functools
+import json
+import time
 from tornado import escape
 from tornado import gen
 from tornado import httpclient
@@ -14,7 +17,7 @@ DEFAULT_REQUEST_TIMEOUT = 60
 class WebSocketClient():
     """Base for web socket clients.
     """
- 
+
     def __init__(self, *, connect_timeout=DEFAULT_CONNECT_TIMEOUT,
                  request_timeout=DEFAULT_REQUEST_TIMEOUT):
 
