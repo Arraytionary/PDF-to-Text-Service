@@ -1,10 +1,7 @@
 import logging as LOG
 import tornado.ioloop as ioloop
-import tornado.httpserver as httpserver
 import tornado.web
-import os.path
 from minio import Minio
-from minio.error import ResponseError
 from handlers.progress_socket import ProgressSocketHandler
 from handlers.uploader import UploaderHandler
 
@@ -16,7 +13,7 @@ LOG.basicConfig(
 if __name__ == "__main__":
     LOG.info("starting web controller server at port 5555 ... ")
     LOG.info("connecting to minio at port 9000...")
-
+    memo = dict()
     minioClient = Minio('127.0.0.1:9000',
                         access_key='admin',
                         secret_key='password',

@@ -1,42 +1,28 @@
+import tornado.web
 import tornado.escape
 import tornado.websocket
-import uuid
-import logging
 
+clients = dict()
+class UpdateProgress(tornado.web.RequestHandler):
+    def initialize(self):
+        self.uuid = tornado.escape.to_unicode(self.request.arguments['uuid'][0])
+    def post(self, *args, **kwargs):
+         pass
 class ProgressSocketHandler(tornado.websocket.WebSocketHandler):
-    waiters = set()
-    cache = []
-    cache_size = 200
-
-    def get_compression_options(self):
-        # Non-None enables compression with default options.
-        return {}
+    def check_origin(self, origin):
+        return True
 
     def open(self):
-        ProgressSocketHandler.waiters.add(self)
-
-    def on_close(self):
-        ProgressSocketHandler.waiters.remove(self)
-
-    @classmethod
-    def update_cache(cls, chat):
-        cls.cache.append(chat)
-        if len(cls.cache) > cls.cache_size:
-            cls.cache = cls.cache[-cls.cache_size:]
-
-    @classmethod
-    def send_updates(cls, chat):
-        for waiter in cls.waiters:
-            try:
-                waiter.write_message(chat)
-            except:
-                logging.error("Error sending message", exc_info=True)
+        self.uuid = tornado.escape.to_unicode(self.request.arguments['uuid'][0])
+        self.client = clients[self.uuid]
+        print("uuid: ", self.uuid)
+        self.write_message("Starting Converting ...")
 
     def on_message(self, message):
-        parsed = tornado.escape.json_decode(message)
-        chat = {
-            "id": str(uuid.uuid4()),
-            "body": parsed["body"],
-        }
-        ProgressSocketHandler.update_cache(chat)
-        ProgressSocketHandler.send_updates(chat)
+        #client should not send anything to the server...
+        self.write_message("fuck")
+
+    def on_close(self):
+        self.write_message("DONE ...")
+
+

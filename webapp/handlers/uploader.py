@@ -1,5 +1,5 @@
 import tornado
-from tornado.httpclient import AsyncHTTPClient
+import requests
 from utils.uploadutil import UploadUtill
 
 class UploaderHandler(tornado.web.RequestHandler):
@@ -15,20 +15,13 @@ class UploaderHandler(tornado.web.RequestHandler):
             self.write(tornado.escape.json_encode(resjson))
             self.set_status(200)
 
-            api_endpoint = 'localhost:5000/createtxt'
-            headers = {'Content-Type': 'application/json'}
-            json_data = tornado.escape.json_encode(data)
-            response = await tornado.http_client.fetch(api_endpoint,
-                                            raise_error=False,
-                                            method='POST',
-                                            body=json_data,
-                                            headers=headers)
+            #Todo: implement the request to pdf to text service
+            # requests.post()
+            
         else:
             resjson = {"status": 504, "message": "upload failed"}
             self.write(tornado.escape.json_encode(resjson))
             self.set_status(504)
-
-    
         self.finish()
 
 
