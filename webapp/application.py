@@ -2,8 +2,9 @@ import logging as LOG
 import tornado.ioloop as ioloop
 import tornado.web
 from minio import Minio
-from handlers.progress_socket import ProgressSocketHandler
+from handlers.progress import ProgressSocketHandler
 from handlers.uploader import UploaderHandler
+from handlers.progress import UpdateProgress
 
 LOG.basicConfig(
     level=LOG.DEBUG,
@@ -21,7 +22,8 @@ if __name__ == "__main__":
                         )
     app = tornado.web.Application(
         [
-            (r"/progress", ProgressSocketHandler),
+            (r"/progress/socket", ProgressSocketHandler),
+            (r"/progress/update", UpdateProgress),
             (r"/uploader", UploaderHandler, dict(minioClient=minioClient)),
         ],
         debug=True,
