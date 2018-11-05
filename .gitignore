@@ -128,6 +128,7 @@ dmypy.json
 [Ss]cripts
 pyvenv.cfg
 pip-selfcheck.json
-
-
+minio
+mongo
+.idea
 # End of https://www.gitignore.io/api/python

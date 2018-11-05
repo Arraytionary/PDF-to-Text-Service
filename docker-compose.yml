@@ -11,8 +11,8 @@ services:
     ports:
       - 9000:9000
     volumes:
-      - .minio/data:/data
-      - .minio/config:/root/.minio
+      - ./minio/data:/data
+      - ./minio/config:/root/.minio
     environment:
       MINIO_ACCESS_KEY: admin
       MINIO_SECRET_KEY: password
