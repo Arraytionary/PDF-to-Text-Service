@@ -31,6 +31,7 @@ services:
       - "redis"
     environment:
       - REDIS_QUEUE=redis
+      - WEB_HOST=web
     ports:
       - '5000:5000'
 
@@ -42,6 +43,7 @@ services:
     environment:
       - MINIO_HOST=minio
       - REDIS_QUEUE=redis
+      - WEB_HOST=web
   
   convert-worker:
     build: ./convert-worker
@@ -51,6 +53,7 @@ services:
     environment:
       - MINIO_HOST=minio
       - REDIS_QUEUE=redis
+      - WEB_HOST=web
   
   zip-worker:
     build: ./zip-worker
@@ -60,6 +63,7 @@ services:
     environment:
       - MINIO_HOST=minio
       - REDIS_QUEUE=redis
+      - WEB_HOST=web
   web:
     build: ./webapp
     depends_on:
