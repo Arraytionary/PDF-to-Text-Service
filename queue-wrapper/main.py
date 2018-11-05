@@ -39,8 +39,8 @@ def send_job():
     uuid = body["uuid"]
 
     # add information to database
-    # if not assign_db(uuid, file_name):
-    #     return jsonify({'status': 'UUID already exist'}),400
+    if not assign_db(uuid, file_name):
+        return jsonify({'status': 'UUID already exist'}),400
     
     # push json to extract queue
     json_packed = json.dumps({"uuid": uuid, "zip_name": file_name})

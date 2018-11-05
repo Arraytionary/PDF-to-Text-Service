@@ -115,14 +115,15 @@ def extract(uuid, file_name, path):
 # upload file to minio
 def upload(uuid, path):
     for file in os.listdir(path):
-        f_path = path + "/" + file
-        try:
-            with open(f_path, 'rb') as file_data:
-                file_stat = os.stat(f_path)
-                print(minioClient.put_object(uuid, file,
-                                    file_data, file_stat.st_size))
-        except ResponseError as err:
-            log.info(err)
+        if file.split(".")[-1] == "pdf" and file[0] != ".":
+            f_path = path + "/" + file
+            try:
+                with open(f_path, 'rb') as file_data:
+                    file_stat = os.stat(f_path)
+                    print(minioClient.put_object(uuid, file,
+                                        file_data, file_stat.st_size))
+            except ResponseError as err:
+                log.info(err)
 
 def main():
     LOG.info('Starting a worker...')

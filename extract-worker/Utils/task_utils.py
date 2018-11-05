@@ -28,10 +28,11 @@ def send_job(uuid):
     pdfs = get_pdfs_list(uuid, mongo)
     for file in pdfs:
         # push json to convert queue
-        json_packed = json.dumps({"uuid": uuid, "file_name": file})
-        RedisResource.conn.rpush(
-            RedisResource.QUEUE_C,
-            json_packed)
+        if file.split(".")[-1] == "pdf" and file[0] != ".":
+            json_packed = json.dumps({"uuid": uuid, "file_name": file})
+            RedisResource.conn.rpush(
+                RedisResource.QUEUE_C,
+                json_packed)
     
     json_packed = json.dumps({"uuid": uuid})
     RedisResource.conn.rpush(

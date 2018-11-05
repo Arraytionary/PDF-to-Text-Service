@@ -6,7 +6,8 @@ def register_pdf__to_db(uuid, path, mongo):
     buckets = mongo.db.buckets
     bucket = buckets.find_one({"_id": uuid})
     for file in os.listdir(path):
-        bucket["pdfs"].append(file)
+        if file.split(".")[-1] == "pdf" and file[0] != ".":
+            bucket["pdfs"].append(file)
     buckets.save(bucket)
 
 def get_pdfs_list(uuid, mongo):
