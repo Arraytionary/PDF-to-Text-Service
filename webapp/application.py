@@ -5,6 +5,7 @@ from minio import Minio
 from handlers.progress import ProgressSocketHandler
 from handlers.uploader import UploaderHandler
 from handlers.progress import UpdateProgress
+HOST = os.getenv("MINIO_HOST", "localhost")
 
 LOG.basicConfig(
     level=LOG.DEBUG,
@@ -14,8 +15,8 @@ LOG.basicConfig(
 if __name__ == "__main__":
     LOG.info("starting web controller server at port 5555 ... ")
     LOG.info("connecting to minio at port 9000...")
-    memo = dict()
-    minioClient = Minio('127.0.0.1:9000',
+
+    minioClient = Minio(f'{HOST}:9000',
                         access_key='admin',
                         secret_key='password',
                         secure=False

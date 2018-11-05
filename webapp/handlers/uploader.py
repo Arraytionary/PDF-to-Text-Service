@@ -1,7 +1,9 @@
 import tornado
 import requests
 from utils.uploadutil import UploadUtill
+HOST = os.getenv("MINIO_HOST", "localhost")
 
+HOST = os.getenv('QUEUE_HOST','localhost')
 class UploaderHandler(tornado.web.RequestHandler):
     def initialize(self, minioClient):
         self.UploadUtill = UploadUtill(minioClient)
