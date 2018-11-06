@@ -17,6 +17,9 @@ from Utils.task_utils import send_job
 from minio import Minio
 from minio.error import ResponseError
 MINIO_HOST = os.getenv("MINIO_HOST", "localhost")
+HOST = os.getenv("WEB_HOST", "localhost")
+BASE_URL = f"http://{HOST}:5555"
+
 
 minioClient = Minio(f'{MINIO_HOST}:9000',
                   access_key='admin',
@@ -76,6 +79,7 @@ def execute(log, task):
     # download
     # download(uuid, zip_name, path)
 
+    requests.post(f"{BASE_URL}?{uuid}", data={"message":"extracting file"})
     # extract file
     extract(uuid, zip_name, path)
 

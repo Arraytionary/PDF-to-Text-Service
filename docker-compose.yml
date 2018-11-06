@@ -1,10 +1,10 @@
 version: '3'
 
 services:
-  # mongo:
-  #   image: "mongo:3.6.8-stretch"
-  #   volumes:
-  #     - ./mongo:/data/db
+   mongo:
+     image: "mongo:3.6.8-stretch"
+     volumes:
+       - ./mongo:/data/db
   minio:
     image: minio/minio
     command: server /data
@@ -17,27 +17,69 @@ services:
       MINIO_ACCESS_KEY: admin
       MINIO_SECRET_KEY: password
       MINIO_BROWSER: "on"
-  # redis:
-  #   image: redis:4-alpine
-  #   ports:
-  #     - '8879:8879'
-  # queue-wrapper:
-  #   build:
-  #     context: ./queue-wrapper
-  #   depends_on:
-  #     - "redis"
-  #   environment:
-  #     - REDIS_QUEUE=redis
-  #   ports:
-  #     - '5000:5000'
-  #   extract-worker:
-  #     build:
-  #       context: ./extract-worker
-  #     depends_on:
-  #       - 'redis'
-  # extract-worker:
-  #   build: ./extract-worker
-  #   depends_on:
-  #     - "redis"
-  #   environment:
-  #     - MINIO_HOST=minio
+  redis:
+    image: redis:4-alpine
+    ports:
+      - '8879:8879'
+
+  queue-wrapper:
+    build:
+      context: ./queue-wrapper
+    depends_on:
+      - "redis"
+    environment:
+      - REDIS_QUEUE=redis
+      - WEB_HOST=web
+    ports:
+      - '5000:5000'
+
+  extract-worker:
+    build: ./extract-worker
+    depends_on:
+      - "redis"
+      - "minio"
+    environment:
+      - MINIO_HOST=minio
+      - REDIS_QUEUE=redis
+      - WEB_HOST=web
+  
+  convert-worker:
+    build: ./convert-worker
+    depends_on:
+      - "redis"
+      - "minio"
+    environment:
+      - MINIO_HOST=minio
+      - REDIS_QUEUE=redis
+      - WEB_HOST=web
+  
+  zip-worker:
+    build: ./zip-worker
+    depends_on:
+      - "redis"
+      - "minio"
+    environment:
+      - MINIO_HOST=minio
+      - REDIS_QUEUE=redis
+      - WEB_HOST=web
+  web:
+    build: ./webapp
+    depends_on:
+      - "minio"
+    ports:
+      - '5555:5555'
+    environment:
+      - MINIO_HOST=minio
+      - QUEUE_HOST=queue-wrapper
+
+  mongo-express:
+    restart: always
+    depends_on:
+      - "mongo"
+    image: "mongo-express:latest"
+    ports:
+      - "8081:8081"
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongo
+      - ME_CONFIG_BASICAUTH_USERNAME=puyo
+      - ME_CONFIG_BASICAUTH_PASSWORD=tetris
