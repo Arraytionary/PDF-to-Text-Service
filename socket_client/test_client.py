@@ -31,7 +31,8 @@ class TestWebSocketClient(WebSocketClient):
 
 if __name__ == '__main__':
     client = TestWebSocketClient()
-    client.connect('ws://localhost:5555/progress/socket?uuid=123456')
+    client.connect(
+        'ws://localhost:5555/progress/socket?uuid=40d24904-3288-48e8-8560-dfd6fd2d2de2')
     try:
         ioloop.IOLoop.instance().start()
     except KeyboardInterrupt:

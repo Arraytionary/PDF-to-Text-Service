@@ -13,7 +13,7 @@ from minio import Minio
 from minio.error import ResponseError
 
 HOST = os.getenv("WEB_HOST", "localhost")
-BASE_URL = f"http://{HOST}:5555"
+BASE_URL = f"http://{HOST}:5555/progress/update"
 MINIO_HOST = os.getenv("MINIO_HOST", "localhost")
 
 minioClient = Minio(f'{MINIO_HOST}:9000',
@@ -71,11 +71,13 @@ def execute(log, task):
     while n_pdfs != n_txts:
         # TODO tell backend that the progress on converting
         convert_progress = n_txts*100./n_pdfs
-        requests.post(f"{BASE_URL}?{uuid}", data={"message":f"converting: {convert_progress}%"})
+        requests.post(f"{BASE_URL}?uuid={uuid}", json={
+                      "message": f"converting: {convert_progress}\%"})
         n_txts = get_txts_num(uuid, mongo)
     # done all converted
     # TODO tell backend that the conversion is complete
-     requests.post(f"{BASE_URL}?{uuid}", data={"message":"convert complete"})
+    requests.post(f"{BASE_URL}?uuid={uuid}", json={
+                  "message": "convert complete"})
 
 
     path = f"./{uuid}/txt/"
@@ -84,7 +86,7 @@ def execute(log, task):
     zip_name = get_zip_name(uuid, mongo)
     download_all_txt(uuid, path)
     # zip all txt file
-     requests.post(f"{BASE_URL}?{uuid}", data={"message":"zipping file"})
+    requests.post(f"{BASE_URL}?uuid={uuid}", json={"message": "zipping file"})
     if not os.path.exists(f"./{uuid}/zip"):
         os.makedirs(f"./{uuid}/zip")
 
@@ -93,7 +95,8 @@ def execute(log, task):
     
     upload(uuid, f"./{uuid}/zip/", zip_name)
     # tell backend that file is ready for download
-     requests.post(f"{BASE_URL}?{uuid}", data={"message":"file is ready to download"})
+    requests.post(f"{BASE_URL}?uuid={uuid}", json={
+                  "message": "file is ready to download"})
 
 def download_all_txt(uuid, path):
     for file_name in get_txts_list(uuid, mongo):

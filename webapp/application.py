@@ -1,3 +1,4 @@
+import os
 import logging as LOG
 import tornado.ioloop as ioloop
 import tornado.web
@@ -5,6 +6,8 @@ from minio import Minio
 from handlers.progress import ProgressSocketHandler
 from handlers.uploader import UploaderHandler
 from handlers.progress import UpdateProgress
+from handlers.downloader import DownloadHandler
+
 HOST = os.getenv("MINIO_HOST", "localhost")
 
 LOG.basicConfig(
@@ -25,7 +28,8 @@ if __name__ == "__main__":
         [
             (r"/progress/socket", ProgressSocketHandler),
             (r"/progress/update", UpdateProgress),
-            (r"/uploader", UploaderHandler, dict(minioClient=minioClient)),
+            (r"/upload", UploaderHandler, dict(minioClient=minioClient)),
+            (r"/download", DownloadHandler, dict(minioClient=minioClient)),
         ],
         debug=True,
     )

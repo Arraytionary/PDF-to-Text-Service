@@ -14,7 +14,7 @@ class UploadUtill:
     def _create_bucket(self):
         """ create bucket on minio"""
         bucket_name = str(uuid.uuid4())
-        LOG.info(bucket_name)
+        # LOG.info(bucket_name)
         try:
             self.minio.make_bucket(bucket_name, location="us-east-1")
         except BucketAlreadyOwnedByYou as err:
@@ -29,7 +29,7 @@ class UploadUtill:
     def addfile(self, data):
         bucket_name = self._create_bucket()
         """ add tgs file to minio """
-        obj_name = f"{bucket_name}.tgz"
+        obj_name = f"{bucket_name}.tar.gz"
         file = io.BytesIO(data)
         try:
             print(self.minio.put_object(

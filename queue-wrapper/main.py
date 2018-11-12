@@ -7,9 +7,8 @@ from pymongo import MongoClient
 import pymongo
 from flask_cors import CORS, cross_origin
 HOST = os.getenv("WEB_HOST", "localhost")
-# PORT = os.getenv("SOS_PORT", 8000)
-BASE_URL = f"http://{HOST}:5555"
-
+# PORT = os.getenv("SOS_PORT", 8000)    
+BASE_URL = f"http://{HOST}:5555/progress/update"
 
 app = Flask(__name__)
 CORS(app, support_credentials=True)
@@ -32,7 +31,7 @@ class RedisResource:
 @app.route('/createtxt', methods = ['POST'])
 def send_job():
     body = request.json
-
+    # print(body)s
     #zip file name
     file_name = body["file"]
 
@@ -44,7 +43,7 @@ def send_job():
         return jsonify({'status': 'UUID already exist'}),400
     
     #issue socket that job has been accepted
-    requests.post(f"{BASE_URL}?{uuid}", data={"message":"Job accepted"})
+    requests.post(f"{BASE_URL}?uuid={uuid}", json={"message":"Job accepted"})
 
     # push json to extract queue
     json_packed = json.dumps({"uuid": uuid, "zip_name": file_name})

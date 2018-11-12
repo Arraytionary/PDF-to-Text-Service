@@ -8,17 +8,19 @@ FROM python:3.7-alpine
 #RUN pip install -r /app/requirements.txt
 
 # Copy everthing from . to /app inside the 'box'
-COPY . /app
+
 WORKDIR /app
 
+COPY requirements.txt .
 
+RUN pip3 install -r requirements.txt
 
 RUN mkdir -p /app/out
 
 VOLUME /app/out
-WORKDIR /app
-ADD requirements.txt requirements.txt
-RUN pip3 install -r requirements.txt
 
+WORKDIR /app
+
+ADD . .
 # How to run it when we start up the box?
 CMD ["./worker.py"]
