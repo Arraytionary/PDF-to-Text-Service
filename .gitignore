@@ -131,4 +131,5 @@ pip-selfcheck.json
 minio
 mongo
 .idea
+test
 # End of https://www.gitignore.io/api/python
