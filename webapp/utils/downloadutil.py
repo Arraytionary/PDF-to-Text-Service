@@ -1,11 +1,11 @@
 from minio.error import (ResponseError, BucketAlreadyOwnedByYou,
-                         BucketAlreadyExists)
+                         BucketAlreadyExists, NoSuchBucket)
 class DownloadUtil:
-    def __int__(self, minio):
-        self.mino = minio
-    def download(uuid):
+    def __init__(self, minio):
+        self.minio = minio
+    def download(self, uuid):
         try:
-            data = minio.get_object(uuid, f"{uuid}.tar.gz")
-        except ResponseError as err:
+            data = self.minio.get_object(uuid, f"{uuid}.tar.gz")
+        except NoSuchBucket as err:
             return None
         return data

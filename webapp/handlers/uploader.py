@@ -9,10 +9,6 @@ class UploaderHandler(tornado.web.RequestHandler):
         self.UploadUtill = UploadUtill(minioClient)
         self.args = self.request.arguments.keys()
 
-    def get(self, *args, **kwargs):
-        self.set_status(200)
-        self.write("hello world!")
-
     def post(self, *args, **kwargs):# start the process
         if 'uuid' in self.args:
             uuid = tornado.escape.to_unicode(self.request.arguments['uuid'][0])

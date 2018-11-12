@@ -20,14 +20,14 @@ class DownloadHandler(tornado.web.RequestHandler):
         if data:
             self.set_header('Content-Type', 'application/x-tar')
             self.set_header(
-                'Content-Disposition', f"attachment; filename= {uuid}.tar.gz")
+                'Content-Disposition', f"attachment; filename={uuid}.tar.gz")
             with open(f"{uuid}.tar.gz", 'wb') as file:
                 for d in data.stream(32*1024):
                     self.write(d)
                     self.flush()
             self.set_status(200)
         else:
-            self.write(tornado.escape.json_encode({"message": "data not found on minio"}))
+            self.write(tornado.escape.json_encode({"status":"not found", "message": "data not found on minio"}))
             self.set_status(404)
         self.finish()
 

@@ -18,12 +18,9 @@ class UploadUtill:
         try:
             self.minio.make_bucket(bucket_name, location="us-east-1")
         except BucketAlreadyOwnedByYou as err:
-            pass
+            return None
         except BucketAlreadyExists as err:
-            pass
-            # return self.create_bucket()
-        except ResponseError as err:
-            raise
+            return self.create_bucket()
         return bucket_name #uuid
 
     def addfile(self, data):
