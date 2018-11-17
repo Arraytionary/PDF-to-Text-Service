@@ -149,7 +149,7 @@
                 // console.log(this.message)
                 if (this.message === 'file is ready to download') {
                     this.finished = true
-                    this.downloadLink = 'localhost:5555/download?uuid='this.uuid
+                    this.downloadLink = 'localhost:5555/download?uuid='+this.uuid
                 }
             }
         },
