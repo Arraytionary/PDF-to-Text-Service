@@ -4,7 +4,6 @@ import tornado.websocket
 
 clients = dict()
 
-
 class UpdateProgress(tornado.web.RequestHandler):
     def initialize(self):
         self.set_header("Content-Type", 'application/json')
