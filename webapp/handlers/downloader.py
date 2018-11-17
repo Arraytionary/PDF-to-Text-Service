@@ -8,6 +8,16 @@ class DownloadHandler(tornado.web.RequestHandler):
         self.set_header("Content-Type", 'application/json')
         self.DownloadUtill = DownloadUtil(minioClient)
 
+    def set_default_headers(self):
+        self.set_header("Access-Control-Allow-Origin", "*")
+        self.set_header("Access-Control-Allow-Headers", "x-requested-with")
+        self.set_header('Access-Control-Allow-Methods',
+                        'POST, GET, OPTIONS, PUT')
+
+    def options(self, *args, **kwargs):
+        self.set_status(204)
+        self.finish()
+
     def get(self, *args, **kwargs):
         try:
             uuid = tornado.escape.to_unicode(self.request.arguments['uuid'][0])

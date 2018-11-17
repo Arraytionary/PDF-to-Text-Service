@@ -32,7 +32,7 @@
             </div>
             <span class="is-centered" v-if="dropFiles.length === 1">
                 <button class="button" style="margin-right: 12.25px" @click="doUpload">Upload</button>
-                <button class="button" v-if="uploaded" @click="">Convert</button>
+                <button class="button" v-if="uploaded" @click="doConvert">Convert</button>
             </span>
 
             <div class="card-body">
@@ -41,7 +41,9 @@
                 </div>
             </div>
             <span class="is-centered" v-if=" finished  === true">
-                <button class="button" style="margin-right: 12.25px" @click="doUpload">Download</button>
+                <a href="url"> {{link}}}</a>
+                <!--<button class="button" style="margin-right: 12.25px" @click="">Download</button>-->
+
             </span>
 
         </div>
@@ -81,20 +83,22 @@
 <!--</template>-->
 
 <script>
-    import io from 'socket.io-client';
+    import axios from 'axios';
 
     export default {
         data() {
             return {
                 dropFiles: [],
                 uploaded: false,
-                uuid:'',
+                uuid:'DEFAULT UUID',
                 status:'',
                 isConnected: false,
-                message:'',
+                message:'DEFAULT MESSAGE',
                 messages:[],
-                socket : io('localhost:3001'),
-                finished: false
+                socket : null,
+                finished: false,
+                downloadLink: '',
+
             }
         },
         methods: {
@@ -103,33 +107,68 @@
                 this.uploaded = false
             },
             doUpload(){
-                this.uploaded = true
                 // Todo: axios upload here
+                axios.put("http://localhost:5555/upload",this.dropFiles[0]).then(res=> {
+                    var json = JSON.parse(res.data);
+                    this.uuid = json.uuid
+                    this.uploaded = true
+                    alert("upload completed")
+
+                }).then(()=>{
+                    console.log(this.uuid)
+                    this.createWebSocket(this.uuid)
+                })
             },
             doConvert(){
                 //Todo: axios createtxt here
+                console.log(this.uuid)
+                const data = {
+                    'uuid': this.uuid,
+                    'file': this.uuid+".tar.gz"
+                }
+                axios.post("http://localhost:5000/createtxt",data).then(res=> {
+                    console.log(res.data)
+                })
             },
-            sendMessage(e) {
-                e.preventDefault();
-
-                this.socket.emit('SEND_MESSAGE', {
-                    user: this.user,
-                    message: this.message
-                });
-                this.message = ''
+            createWebSocket(uuid) {
+                const ws = new WebSocket("ws://localhost:5555/progress/socket?uuid="+uuid)
+                ws.onopen = function() {
+                    // ws.send("Ready to start");
+                    console.log("connecting to socket")
+                };
+                ws.onmessage = (evt) => {
+                    // console.log(evt.data)
+                    // console.log(this.message)
+                    this.message = evt.data
+                };
+                this.socket = ws
+            }
+        },
+        watch: {
+            message(){
+                // console.log(this.message)
+                if (this.message === 'file is ready to download') {
+                    this.finished = true
+                    this.downloadLink = 'localhost:5555/download?uuid='this.uuid
+                }
             }
         },
         mounted() {
-            this.socket.on('MESSAGE', (data) => {
-                this.message = data;
-                console.log(data)
-// you can also do this.messages.push(data)
-            });
-            this.socket.on('FINISH', (data) => {
-                this.finished = data;
-                console.log(data)
-// you can also do this.messages.push(data)
-            });
+            if(this.socket) {
+                console.log("hello from mounted")
+                this.socket.onmessage = function (evt) {
+                    this.message = evt.data
+                };
+            }
+            // this.socket.on('MESSAGE', (data) => {
+            //     this.message = data;
+            //     console.log(data)
+            // });
+            // this.socket.on('FINISH', (data) => {
+            //     this.finished = data;
+            //     console.log(data)
+            // });
+        // }
         }
     }
 </script>

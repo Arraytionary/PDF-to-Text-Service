@@ -63,15 +63,15 @@ services:
       - MINIO_HOST=minio
       - REDIS_QUEUE=redis
       - WEB_HOST=web
-  # web:
-  #   build: ./webapp
-  #   depends_on:
-  #     - "minio"
-  #   ports:
-  #     - '5555:5555'
-  #   environment:
-  #     - MINIO_HOST=minio
-  #     - QUEUE_HOST=queue-wrapper
+  web:
+    build: ./webapp
+    depends_on:
+      - "minio"
+    ports:
+      - '5555:5555'
+    environment:
+      - MINIO_HOST=minio
+      - QUEUE_HOST=queue-wrapper
 
   # mongo-express:
   #   restart: always

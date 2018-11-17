@@ -5,6 +5,15 @@ import tornado.websocket
 clients = dict()
 
 class UpdateProgress(tornado.web.RequestHandler):
+    def set_default_headers(self):
+        self.set_header("Access-Control-Allow-Origin", "*")
+        self.set_header("Access-Control-Allow-Headers", "x-requested-with")
+        self.set_header('Access-Control-Allow-Methods',
+                        'POST, GET, OPTIONS, PUT')
+
+    def options(self, *args, **kwargs):
+        self.set_status(204)
+        self.finish()
     def initialize(self):
         self.set_header("Content-Type", 'application/json')
         try:
@@ -30,6 +39,7 @@ class UpdateProgress(tornado.web.RequestHandler):
 
 
 class ProgressSocketHandler(tornado.websocket.WebSocketHandler):
+    
     def check_origin(self, origin):
         return True
 
@@ -45,6 +55,7 @@ class ProgressSocketHandler(tornado.websocket.WebSocketHandler):
         self.write_message(f"clientmsg: {message}")
         
     def on_close(self):
+
         self.write_message("connnectopn close")
 
 
