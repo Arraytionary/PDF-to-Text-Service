@@ -108,7 +108,7 @@
             },
             doUpload(){
                 // Todo: axios upload here
-                axios.put("http://localhost:5555/upload",this.dropFiles[0]).then(res=> {
+                axios.put("http://10.109.120.85:5555/upload",this.dropFiles[0]).then(res=> {
                     var json = JSON.parse(res.data);
                     this.uuid = json.uuid
                     this.uploaded = true
@@ -126,12 +126,12 @@
                     'uuid': this.uuid,
                     'file': this.uuid+".tar.gz"
                 }
-                axios.post("http://localhost:5000/createtxt",data).then(res=> {
+                axios.post("http://10.107.148.51:5000/createtxt",data).then(res=> {
                     console.log(res.data)
                 })
             },
             createWebSocket(uuid) {
-                const ws = new WebSocket("ws://localhost:5555/progress/socket?uuid="+uuid)
+                const ws = new WebSocket("ws://10.109.120.85:5555/progress/socket?uuid="+uuid)
                 ws.onopen = function() {
                     // ws.send("Ready to start");
                     console.log("connecting to socket")
@@ -149,7 +149,7 @@
                 // console.log(this.message)
                 if (this.message === 'file is ready to download') {
                     this.finished = true
-                    this.downloadLink = 'localhost:5555/download?uuid='+this.uuid
+                    this.downloadLink = 'http://10.109.120.85:5555/download?uuid='+this.uuid
                 }
             }
         },

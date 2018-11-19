@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose up
+    kompose.version: 1.17.0 ()
+  creationTimestamp: 2018-11-19T13:34:03Z
+  labels:
+    io.kompose.service: web
+  name: web
+  namespace: default
+  resourceVersion: "10894"
+  selfLink: /api/v1/namespaces/default/services/web
+  uid: c7b5f7f8-ebff-11e8-b543-08002781788a
+spec:
+  clusterIP: 10.109.120.85
+  ports:
+  - name: "5555"
+    port: 5555
+    protocol: TCP
+    targetPort: 5555
+    nodePort: 30005
+  type: NodePort
+  selector:
+    io.kompose.service: web
+  sessionAffinity: None
+status:
+  loadBalancer: {}

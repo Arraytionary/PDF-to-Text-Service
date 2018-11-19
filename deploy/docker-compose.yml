@@ -1,0 +1,71 @@
+version: '3'
+services:
+  mongo:
+    image: "mongo:3.6.8-stretch"
+    ports:
+      - '27017'
+
+  minio:
+    image: minio/minio
+    command: server /data
+    ports:
+      - '9000'
+
+    environment:
+      MINIO_ACCESS_KEY: admin
+      MINIO_SECRET_KEY: password
+      MINIO_BROWSER: "on"
+  redis:
+    image: redis:4-alpine
+    ports:
+      - '8879'
+
+  queue-wrapper:
+    image: magurolab/pdf-to-text-service_queue-wrapper:v1
+    depends_on:
+      - "redis"
+    environment:
+      - REDIS_QUEUE=redis
+      - WEB_HOST=web
+    ports:
+      - '5000'
+
+  extract-worker:
+    image: magurolab/pdf-to-text-service_extract-worker:v1
+    depends_on:
+      - "redis"
+      - "minio"
+    environment:
+      - MINIO_HOST=minio
+      - REDIS_QUEUE=redis
+      - WEB_HOST=web
+  
+  convert-worker:
+    image: magurolab/pdf-to-text-service_convert-worker:v1
+    depends_on:
+      - "redis"
+      - "minio"
+    environment:
+      - MINIO_HOST=minio
+      - REDIS_QUEUE=redis
+      - WEB_HOST=web
+  
+  zip-worker:
+    image: magurolab/pdf-to-text-service_zip-worker:v1
+    depends_on:
+      - "redis"
+      - "minio"
+    environment:
+      - MINIO_HOST=minio
+      - REDIS_QUEUE=redis
+      - WEB_HOST=web
+
+  web:
+    image: magurolab/pdf-to-text-service_web:v1
+    depends_on:
+      - "minio"
+    ports:
+      - '5555'
+    environment:
+      - MINIO_HOST=minio
+      - QUEUE_HOST=queue-wrapper
