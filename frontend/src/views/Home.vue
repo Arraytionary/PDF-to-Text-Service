@@ -160,15 +160,6 @@
                     this.message = evt.data
                 };
             }
-            // this.socket.on('MESSAGE', (data) => {
-            //     this.message = data;
-            //     console.log(data)
-            // });
-            // this.socket.on('FINISH', (data) => {
-            //     this.finished = data;
-            //     console.log(data)
-            // });
-        // }
         }
     }
 </script>
