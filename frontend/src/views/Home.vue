@@ -40,6 +40,10 @@
                     <p><span class="font-weight-bold">{{ message }} </span></p>
                 </div>
             </div>
+
+
+            <pulse-loader :loading="loading" :color="color" :size="size"></pulse-loader>
+
             <span class="is-centered" v-if=" finished  === true">
                 <a href="url"> {{link}}}</a>
                 <!--<button class="button" style="margin-right: 12.25px" @click="">Download</button>-->
@@ -93,7 +97,7 @@
                 uuid:'DEFAULT UUID',
                 status:'',
                 isConnected: false,
-                message:'DEFAULT MESSAGE',
+                // message:'DEFAULT MESSAGE',
                 messages:[],
                 socket : null,
                 finished: false,
@@ -108,16 +112,24 @@
             },
             doUpload(){
                 // Todo: axios upload here
+
                 axios.put("http://localhost:5555/upload",this.dropFiles[0]).then(res=> {
                     var json = JSON.parse(res.data);
                     this.uuid = json.uuid
                     this.uploaded = true
                     alert("upload completed")
 
+
                 }).then(()=>{
-                    console.log(this.uuid)
-                    this.createWebSocket(this.uuid)
+                    this.$router.push({
+                        name: 'download',
+                        params: {
+                            id: this.uuid
+                        }
+                    });
+
                 })
+
             },
             doConvert(){
                 //Todo: axios createtxt here
@@ -128,7 +140,16 @@
                 }
                 axios.post("http://localhost:5000/createtxt",data).then(res=> {
                     console.log(res.data)
+                }).then(()=>{
+                    this.$router.push({
+                        name: 'download',
+                        params: {
+                            id: this.uuid
+                        }
+                    });
+
                 })
+
             },
             createWebSocket(uuid) {
                 const ws = new WebSocket("ws://localhost:5555/progress/socket?uuid="+uuid)
