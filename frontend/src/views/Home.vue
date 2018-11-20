@@ -111,7 +111,7 @@
             doUpload(){
                 // Todo: axios upload here
 
-                axios.put("http://localhost:5555/upload",this.dropFiles[0]).then(res=> {
+                axios.put("http://192.168.99.100:30005/upload",this.dropFiles[0]).then(res=> {
                     var json = JSON.parse(res.data);
                     this.uuid = json.uuid
                     this.uploaded = true

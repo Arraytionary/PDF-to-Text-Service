@@ -45,7 +45,7 @@
         },
         methods: {
             createWebSocket(uuid) {
-                const ws = new WebSocket("ws://localhost:5555/progress/socket?uuid="+uuid)
+                const ws = new WebSocket("ws://192.168.99.100:30005/progress/socket?uuid="+uuid)
                 ws.onopen = function() {
                     // ws.send("Ready to start");
                     console.log("connecting to socket")
@@ -63,7 +63,7 @@
                     'uuid': this.uuid,
                     'file': this.uuid+".tar.gz"
                 }
-                axios.post("http://localhost:5000/createtxt",data).then( res => {
+                axios.post("http://192.168.99.100:30006/createtxt",data).then( res => {
                     console.log(res.data)
                 })
                 this.converted = false
@@ -75,7 +75,7 @@
                 console.log(this.message)
                 if (this.message === 'file is ready to download') {
                     this.finished = true
-                    this.link = 'http://localhost:5555/download?uuid='+this.uuid
+                    this.link = 'http://192.168.99.100:30005/download?uuid='+this.uuid
                     this.loading = false
                 }
                 if (this.message !== 'Ready to convert.' && this.message !== 'Starting Converting ...'){

@@ -51,7 +51,7 @@ services:
       - WEB_HOST=web
   
   zip-worker:
-    image: magurolab/pdf-to-text-service_zip-worker:v1
+    image: magurolab/pdf-to-text-service_zip-worker:v2
     depends_on:
       - "redis"
       - "minio"
@@ -61,7 +61,7 @@ services:
       - WEB_HOST=web
 
   web:
-    image: magurolab/pdf-to-text-service_web:v1
+    image: magurolab/pdf-to-text-service_web:v2
     depends_on:
       - "minio"
     ports:
