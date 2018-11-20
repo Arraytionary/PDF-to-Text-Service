@@ -21,7 +21,7 @@ services:
   redis:
     image: redis:4-alpine
     ports:
-      - '8879:8879'
+      - '6379'
 
   queue-wrapper:
     build:
