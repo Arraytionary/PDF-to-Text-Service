@@ -70,7 +70,7 @@ def execute(log, task):
     # Do spin wait until all file being converted
     while n_pdfs != n_txts:
         # TODO tell backend that the progress on converting
-        convert_progress = n_txts*100./n_pdfs
+        convert_progress = '{0:.4g}'.format(n_txts*100./n_pdfs)
         requests.post(f"{BASE_URL}?uuid={uuid}", json={
                       "message": f"converting: {convert_progress}\%"})
         n_txts = get_txts_num(uuid, mongo)
