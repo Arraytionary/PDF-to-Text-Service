@@ -51,7 +51,7 @@ class ProgressSocketHandler(tornado.websocket.WebSocketHandler):
             # self.write_message("uuid: " + self.uuid)
             self.write_message("Starting Converting ...")
         else:
-            self.write_message(clients[self.uuid].message[-1]) 
+            self.write_message(clients[self.uuid].messages[-1]) 
 
     def on_message(self, message):
         # client should not send anything to the server...
