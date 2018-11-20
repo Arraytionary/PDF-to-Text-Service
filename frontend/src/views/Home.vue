@@ -32,7 +32,7 @@
             </div>
             <span class="is-centered" v-if="dropFiles.length === 1">
                 <button class="button" style="margin-right: 12.25px" @click="doUpload">Upload</button>
-                <button class="button" v-if="uploaded" @click="doConvert">Convert</button>
+
             </span>
 
             <div class="card-body">
@@ -40,6 +40,8 @@
                     <p><span class="font-weight-bold">{{ message }} </span></p>
                 </div>
             </div>
+
+
             <span class="is-centered" v-if=" finished  === true">
                 <a href="url"> {{link}}}</a>
                 <!--<button class="button" style="margin-right: 12.25px" @click="">Download</button>-->
@@ -93,7 +95,7 @@
                 uuid:'DEFAULT UUID',
                 status:'',
                 isConnected: false,
-                message:'DEFAULT MESSAGE',
+                message:'',
                 messages:[],
                 socket : null,
                 finished: false,
@@ -108,59 +110,24 @@
             },
             doUpload(){
                 // Todo: axios upload here
-                axios.put("http://10.109.120.85:5555/upload",this.dropFiles[0]).then(res=> {
+
+                axios.put("http://localhost:5555/upload",this.dropFiles[0]).then(res=> {
                     var json = JSON.parse(res.data);
                     this.uuid = json.uuid
                     this.uploaded = true
                     alert("upload completed")
 
-                }).then(()=>{
+                }).then(()=> {
                     console.log(this.uuid)
-                    this.createWebSocket(this.uuid)
-                })
+                    this.$router.push({
+                    name: 'download',
+                    params: {
+                        uuid: this.uuid
+                    }
+                })})
+
             },
-            doConvert(){
-                //Todo: axios createtxt here
-                console.log(this.uuid)
-                const data = {
-                    'uuid': this.uuid,
-                    'file': this.uuid+".tar.gz"
-                }
-                axios.post("http://10.107.148.51:5000/createtxt",data).then(res=> {
-                    console.log(res.data)
-                })
-            },
-            createWebSocket(uuid) {
-                const ws = new WebSocket("ws://10.109.120.85:5555/progress/socket?uuid="+uuid)
-                ws.onopen = function() {
-                    // ws.send("Ready to start");
-                    console.log("connecting to socket")
-                };
-                ws.onmessage = (evt) => {
-                    // console.log(evt.data)
-                    // console.log(this.message)
-                    this.message = evt.data
-                };
-                this.socket = ws
-            }
         },
-        watch: {
-            message(){
-                // console.log(this.message)
-                if (this.message === 'file is ready to download') {
-                    this.finished = true
-                    this.downloadLink = 'http://10.109.120.85:5555/download?uuid='+this.uuid
-                }
-            }
-        },
-        mounted() {
-            if(this.socket) {
-                console.log("hello from mounted")
-                this.socket.onmessage = function (evt) {
-                    this.message = evt.data
-                };
-            }
-        }
     }
 </script>
 

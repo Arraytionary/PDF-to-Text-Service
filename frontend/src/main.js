@@ -10,7 +10,12 @@ import 'buefy/dist/buefy.css'
 Vue.config.productionTip = false
 Vue.use(Buefy)
 
+var PulseLoader = require('vue-spinner/src/PulseLoader.vue');
+
 new Vue({
+    components: {
+        'PulseLoader': PulseLoader
+    },
   router,
   store,
   render: h => h(App)

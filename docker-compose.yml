@@ -72,6 +72,11 @@ services:
     environment:
       - MINIO_HOST=minio
       - QUEUE_HOST=queue-wrapper
+  front:
+    build:
+      context: ./frontend
+    ports:
+      - '8080:8080'
 
   # mongo-express:
   #   restart: always
