@@ -21,15 +21,15 @@ class UploaderHandler(tornado.web.RequestHandler):
     def post(self, *args, **kwargs):# start the process
         if 'uuid' in self.args:
             uuid = tornado.escape.to_unicode(self.request.arguments['uuid'][0])
-            json = {
-                    'uuid': uuid,
-                    'file': f"{uuid}.tar.gz"
-                    }
             url = f"http://{HOST}:5000/createtxt"
-            print(url)
-            r = requests.post(url, json=json)
+            print("\n",url,"\n")
+            r = requests.post(url, json={
+                'uuid': uuid,
+                'file': f"{uuid}.tar.gz"
+            })
             self.set_status(r.status_code)
             self.write(f"{url}")
+            
         else:
             self.set_status(400)
             self.write("no uuid in the url")

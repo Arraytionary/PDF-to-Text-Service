@@ -45,17 +45,19 @@ class ProgressSocketHandler(tornado.websocket.WebSocketHandler):
 
     def open(self):
         self.uuid = tornado.escape.to_unicode(self.request.arguments['uuid'][0])
-        clients[self.uuid] = self
-        self.messages = []
-        self.write_message("uuid: " + self.uuid)
-        self.write_message("Starting Converting ...")
+        if self.uuid not in clients.keys():
+            clients[self.uuid] = self
+            self.messages = []
+            # self.write_message("uuid: " + self.uuid)
+            self.write_message("Starting Converting ...")
+        else:
+            self.write_message(clients[self.uuid].message[-1])
 
     def on_message(self, message):
         # client should not send anything to the server...
-        self.write_message(f"clientmsg: {message}")
+        pass
         
     def on_close(self):
-
         self.write_message("connnectopn close")
 
 
